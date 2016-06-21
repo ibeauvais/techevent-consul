@@ -31,8 +31,8 @@
 <div class="wrapper">
 
     <section id="main-content">
-        <h1>Workshop : Service discovery &amp; Consul
-        </h1>
+        <h2>Workshop : Service discovery &amp; Consul
+        </h2>
 
 
         <p>Dans ce workshop, vous aurez à disposition 4 instances Amazon servant respectivement à :
@@ -45,6 +45,64 @@
         {% include tuto-consul.html %}
 
         <p>Template {{page.group}}</p>
+    </section>
+
+    <section>
+        Consul est un outil de service discovery, permettant à des services de s'enregistrer auprès d'un serveur, et à d'autres services d'interroger ce même serveur pour récupérer des informations sur les services déployés sur notre cluster
+
+        <h2>Introduction</h2>
+
+        Il y a quelques mois, votre entreprise a suivie le dernier buzz word à la mode suite à une université à devoxx france, et à décider de se lancer dans l’aventure des micro services. De très nombreux micro services plus tard, un problème est apparu : comment connaître l’adresse de mes services. Après consultation du pôle architecture de notre société, suivi par de trop nombreuses réunions, il a été décidé de mettre en place une solution de service discovery.
+
+        <h3>Téléchargement de la clef privé</h3>
+
+
+        <p>Pour vous connecter aux machines, récupérer le fichier <a href="https://raw.github.com/Jean-Eudes/techevent-consul/master/script/consul.pem">graphite.pem</a> ou le fichier <a href="https://raw.github.com/Jean-Eudes/techevent-consul/master/script/consul.ppk">graphite.ppk</a> pour les utilisateurs Windows, dans votre répertoire courant (la clef sera révoquée après le workshop). N'oubliez pas de changer les permissions sur le fichier :</p>
+
+        <h4>Pour Linux ou Mac :</h4>
+
+        {% highlight bash %}
+        $ chmod 600 graphite.pem
+        {% endhighlight %}
+
+
+        {% highlight bash %}
+        $ ssh -i consul.pem ec2-user@{{page.group}}-server.consul.aws.xebiatechevent.info
+        {% endhighlight %}
+
+        <h4>Pour windows :</h4>
+        <ul>
+            <li>Si vous ne l'avez pas, récupérez <a href="http://the.earth.li/~sgtatham/putty/latest/x86/putty.exe">PuTTY</a></li>
+            <li>Entrez l'adresse <em>{{page.group}}-server.consul.aws.xebiatechevent.info</em> à l'emplacement de l'encadré rouge ci-dessous</li>
+        </ul>
+
+        <img src="../images/putty_ip.png" alt="putty ip"/>
+
+        <ul>
+            <li>Suivez ensuite les screenshots suivants :</li>
+        </ul>
+
+        <img src="../images/putty_user.png" alt="putty2"/>
+        <img src="../images/putty_key1.png" alt="putty3"/>
+        <img src="../images/putty_key2.png" alt="putty4"/>
+        <img src="../images/putty_open_connection.png" alt="putty5"/>
+
+
+
+        ## Installation de consul (étape déjà faite pour le XKE de décembre)
+
+        Consul est livré sous la forme d’un simple binaire. Il suffit simplement de le télécharger :
+
+        {% highlight bash %}
+        wget https://dl.bintray.com/mitchellh/consul/0.5.2_linux_amd64.zip
+        {% endhighlight %}
+
+        Consul est également livré avec une ui que l’on peut télécharger avec le lien suivant :
+
+        {% highlight bash %}
+        wget https://dl.bintray.com/mitchellh/consul/0.5.2_web_ui.zip
+        {% endhighlight %}
+
     </section>
 
 </div>
