@@ -107,7 +107,7 @@ $ wget https://dl.bintray.com/mitchellh/consul/0.6.4_linux_amd64.zip
         Pour celà, connectez vous sur le serveur consul
 
         {% highlight bash %}
-$ ssh -i consul.pem ec2-user@{{page.group}}-server.consul.aws.xebiatechevent.info
+$ ssh consul@{{page.group}}-server.consul.aws.xebiatechevent.info
         {% endhighlight %}
 
         et lancer le serveur :
@@ -129,7 +129,7 @@ $ consul members
         On va maintenant ajouter un agent consul et le connecter à notre serveur. Connectez vous à votre machine web1, et lancer l'agent consul
 
         {% highlight bash %}
-$ ssh -i consul.pem ec2-user@{{page.group}}-web1.consul.aws.xebiatechevent.info
+$ ssh  consul@{{page.group}}-web1.consul.aws.xebiatechevent.info
         {% endhighlight %}
 
 
