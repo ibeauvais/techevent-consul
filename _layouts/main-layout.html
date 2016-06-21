@@ -94,7 +94,7 @@
         Consul est livré sous la forme d’un simple binaire. Il suffit simplement de le télécharger :
 
         {% highlight bash %}
-        wget https://dl.bintray.com/mitchellh/consul/0.6.4_linux_amd64.zip
+$ wget https://dl.bintray.com/mitchellh/consul/0.6.4_linux_amd64.zip
         {% endhighlight %}
 
     </section>
@@ -102,25 +102,56 @@
     <section>
         <h2>Lancement du serveur consul</h2>
 
-
-
         Nous allons maintenant lancer notre serveur consul, en spécifiant que nous ne lançons que une instance (pas de redondance), et qu’il sera accessible depuis l’extérieur.
 
         Pour celà, connectez vous sur le serveur consul
 
         {% highlight bash %}
-        ssh -i consul.pem ec2-user@{{page.group}}-server.consul.aws.xebiatechevent.info
+$ ssh -i consul.pem ec2-user@{{page.group}}-server.consul.aws.xebiatechevent.info
         {% endhighlight %}
 
         et lancer le serveur :
         {% highlight bash %}
-        consul agent -server -bootstrap-expect 1 -data-dir /tmp/consul --client 0.0.0.0 -ui-dir ui -config-dir etc/consul.d &
+$ consul agent -server -bootstrap-expect 1 -data-dir /tmp/consul --client 0.0.0.0 -ui-dir ui -config-dir etc/consul.d &
         {% endhighlight %}
 
         Il est possible de regarder l’état du serveur avec la commande
 
         {% highlight bash %}
-        consul members
+$ consul members
+        {% endhighlight %}
+
+    </section>
+
+    <section>
+        <h2>Lancement de l'agent consul</h2>
+
+        On va maintenant ajouter un agent consul et le connecter à notre serveur. Connectez vous à votre machine web1, et lancer l'agent consul
+
+        {% highlight bash %}
+$ ssh -i consul.pem ec2-user@{{page.group}}-web1.consul.aws.xebiatechevent.info
+        {% endhighlight %}
+
+
+        {% highlight bash %}
+$ mkdir -p etc/consul.d
+$ consul agent -data-dir /tmp/consul -node=agent1 -config-dir etc/consul.d &
+$ consul join <addr_ip_privé_serveur/>
+        {% endhighlight %}
+
+        Si vous demandez maintenant à consul de vous affichez l’état du cluster, vous verrez bien apparaître deux lignes, une pour le serveur, et une pour le client.
+
+        Consul propose également une api rest pour connaître l’état du cluster
+
+        {% highlight bash %}
+$ curl localhost:8500/v1/catalog/nodes
+        {% endhighlight %}
+
+
+        Il est également possible de voir l’état du cluster en se connectant à l’interface web :
+
+        {% highlight bash %}
+$ http://{{page.group}}-server.consul.aws.xebiatechevent.info:8500/ui/
         {% endhighlight %}
 
     </section>
