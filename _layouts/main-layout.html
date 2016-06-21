@@ -310,6 +310,87 @@ $ curl -X PUT -d 'http' http://localhost:8500/v1/kv/service/haproxy/mode
 
 </section>
 
+
+<section>
+    <h1>Gestion des templates</h1>
+
+    Il peut parfois être nécessaire de mettre à jour dynamiquement la configuration d'un fichier en fonction de la création d'un nouveau service ou d'une mise à jour d'un dictionnaire.
+    Dans l'exemple suivant, on va demander à consul de nous générer une configuration haproxy qui se mettra automatiquement à jour lorsque l'on rajoutera un nouveau serveur web.
+
+    Pour commencer, dans notre serveur consul, dans son répertoire (etc/consul.d), déclarer un service nommé web avec également un tag web.
+
+    Penser à rechager la configuration.
+
+    On va maintenant installer un outil s'appelant consul-template permettant comme son nom l'indique de gérer des templates en fonction de la configuration consul.
+
+    {% highlight bash %}
+cd
+$ wget https://github.com/hashicorp/consul-template/releases/download/v0.11.0/consul_template_0.11.0_linux_amd64.zip
+$ unzip consul_template_0.11.0_linux_amd64.zip
+$ mv consul-template bin
+$ rm consul_template_0.11.0_linux_amd64.zip
+    {% endhighlight %}
+
+    Les fichiers template géré par consul se base sur la syntaxe [hcl](https://github.com/hashicorp/hcl). En vous basant sur l'exemple suivant,
+    créer un fichier template (haproxy.tmpl) qui génère une configuration haproxy renvoyant les requêtes sur un serveur au hasard.
+
+    Pour celà, basez vous sur le service web que nous avons défini dans nos services
+
+    Exemple :
+
+    {% highlight text %}
+global
+daemon
+maxconn 256
+
+defaults
+mode http
+timeout connect 5000ms
+timeout client 50000ms
+timeout server 50000ms
+
+listen http-in
+bind *:8000
+server web1 127.0.0.1:8000
+server web2 127.0.0.1:8000
+    {% endhighlight %}
+
+
+    Pour lancer consul-template, on utilise la commande ci-dessous.
+
+    {% highlight bash %}
+$ consul-template   -consul localhost:8500   -template haproxy.tmpl:haproxy.conf &
+    {% endhighlight %}
+
+    [lien vers la documentation de consul-template](https://github.com/hashicorp/consul-template)
+
+
+    <div class = 'solution'>
+        {% highlight ruby %}
+global
+daemon
+maxconn 256
+
+defaults
+mode http
+timeout connect 5000ms
+timeout client 50000ms
+timeout server 50000ms
+
+listen http-in
+bind *:8000 {{ "{{ range service 'web' "}} }}
+server {{ "{{ .Node "}} }} {{ "{{.Address "}} }} : {{ "{{ .Port "}} }} {{ "{{ end "}} }}
+        {% endhighlight %}
+    </div>
+
+    Eteigner un de vos serveur python, et regarder le fichier haproxy.conf se mettre à jour.
+
+
+    Pour finir, on va utiliser les données des dictionnaires défini précedement pour finaliser notre template.
+    Passer à tuer et à redémarrer consul-template pour prendre en compte la nouvelle configuration.
+
+</section>
+
 </div>
 <!--[if !IE]><script>fixScale(document);</script><![endif]-->
 
