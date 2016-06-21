@@ -89,21 +89,42 @@
 
 
 
-        ## Installation de consul (étape déjà faite pour le XKE de décembre)
+        ## Installation de consul (étape déjà faite pour ce techeveny)
 
         Consul est livré sous la forme d’un simple binaire. Il suffit simplement de le télécharger :
 
         {% highlight bash %}
-        wget https://dl.bintray.com/mitchellh/consul/0.5.2_linux_amd64.zip
-        {% endhighlight %}
-
-        Consul est également livré avec une ui que l’on peut télécharger avec le lien suivant :
-
-        {% highlight bash %}
-        wget https://dl.bintray.com/mitchellh/consul/0.5.2_web_ui.zip
+        wget https://dl.bintray.com/mitchellh/consul/0.6.4_linux_amd64.zip
         {% endhighlight %}
 
     </section>
+
+    <section>
+        <h2>Lancement du serveur consul</h2>
+
+
+
+        Nous allons maintenant lancer notre serveur consul, en spécifiant que nous ne lançons que une instance (pas de redondance), et qu’il sera accessible depuis l’extérieur.
+
+        Pour celà, connectez vous sur le serveur consul
+
+        {% highlight bash %}
+        ssh -i consul.pem ec2-user@{{page.group}}-server.consul.aws.xebiatechevent.info
+        {% endhighlight %}
+
+        et lancer le serveur :
+        {% highlight bash %}
+        consul agent -server -bootstrap-expect 1 -data-dir /tmp/consul --client 0.0.0.0 -ui-dir ui -config-dir etc/consul.d &
+        {% endhighlight %}
+
+        Il est possible de regarder l’état du serveur avec la commande
+
+        {% highlight bash %}
+        consul members
+        {% endhighlight %}
+
+    </section>
+
 
 </div>
 <!--[if !IE]><script>fixScale(document);</script><![endif]-->
