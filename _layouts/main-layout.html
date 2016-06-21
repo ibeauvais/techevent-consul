@@ -42,8 +42,6 @@
             <li>1 instance servant à répartir la charge entre les deux instances de service web</li>
         </ul>
 
-        {% include tuto-consul.html %}
-
         <p>Template {{page.group}}</p>
     </section>
 
@@ -100,7 +98,7 @@ $ wget https://dl.bintray.com/mitchellh/consul/0.6.4_linux_amd64.zip
     </section>
 
     <section>
-        <h2>Lancement du serveur consul</h2>
+        <h1>Lancement du serveur consul</h1>
 
         Nous allons maintenant lancer notre serveur consul, en spécifiant que nous ne lançons que une instance (pas de redondance), et qu’il sera accessible depuis l’extérieur.
 
@@ -124,7 +122,7 @@ $ consul members
     </section>
 
     <section>
-        <h2>Lancement de l'agent consul</h2>
+        <h1>Lancement de l'agent consul</h1>
 
         On va maintenant ajouter un agent consul et le connecter à notre serveur. Connectez vous à votre machine web1, et lancer l'agent consul
 
@@ -157,7 +155,7 @@ $ http://{{page.group}}-server.consul.aws.xebiatechevent.info:8500/ui/
     </section>
 
     <section>
-        <h2>Création de notre premier service</h2>
+        <h1>Création de notre premier service</h1>
 
 Avec consul, la création d’un service passe par la création d’un fichier json décrivant le service. Dans le répertoire /etc/consul.d de la machine contenant l’agent, créer un fichier nommé web.json avec le contenu suivant :
 
@@ -180,7 +178,7 @@ Vous pouvez voir dans l’interface qu'un nouveau service est apparu.
     </section>
 
     <section>
-        <h3>Interroger consul</h3>
+        <h1>Interroger consul</h1>
 Consul met à disposition deux interfaces pour avoir accès aux informations d’un service :
 - un service REST
 - un serveur DNS.
