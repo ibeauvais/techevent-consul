@@ -283,6 +283,32 @@ $ cat /proc/loadavg | awk '{printf "CPU Load Average: 1m: %.2f, 5m: %.2f, 15m: %
 
     </section>
 
+<section>
+    <h1>Base de donnée clef valeur</h1>
+
+    Consul possède également une base de donnée clef valeur lui permettant de stocker des informations qui pourront par la suite être accessible par exemple par les applications via l’API http.
+
+    A l’aide de l’API http, renseigner les trois clefs suivantes avec leurs valeurs associés :
+
+    {% highlight text %}
+service/haproxy/maxconn : 256
+service/haproxy/timeouts/connect : 5000ms
+service/haproxy/timeouts/client : 50000ms
+service/haproxy/timeouts/server : 50000ms
+service/haproxy/mode : http
+    {% endhighlight %}
+
+    <a href="https://www.consul.io/intro/getting-started/kv.html">lien vers la documentation de la base de donnée</a>
+
+    <div class = 'solution'>
+{% highlight bash %}
+$ curl -X PUT -d '256' http://localhost:8500/v1/kv/service/haproxy/maxconn
+$ curl -X PUT -d '5000ms' http://localhost:8500/v1/kv/service/haproxy/timeouts
+$ curl -X PUT -d 'http' http://localhost:8500/v1/kv/service/haproxy/mode
+{% endhighlight %}
+    </div>
+
+</section>
 
 </div>
 <!--[if !IE]><script>fixScale(document);</script><![endif]-->
