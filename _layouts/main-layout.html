@@ -10,6 +10,7 @@
     <script src="javascripts/respond.js"></script>
     <!--[if lt IE 9]>
     <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <script src="../javascripts/script.js"/>
     <![endif]-->
     <!--[if lt IE 8]>
     <link rel="stylesheet" href="../stylesheets/ie.css">
@@ -204,6 +205,79 @@ Remarque: Consul est aussi capable d'utiliser le protocole DNS SRV, qui permet n
 dig @127.0.0.1 -p 8600 web.service.consul SRV
 {% endhighlight %}
 </div>
+
+    </section>
+
+    <section>
+        <h1>Gestion du health check</h1>
+
+        <h2>Au niveau du service</h2>
+
+        Il est possible de rajouter un health check pour déterminer si notre service et up ou non. Modifier le fichier web.json pour ajouter un health check.
+
+        Penser à recharger la configuration.
+
+        [lien vers la documentation du health check](https://www.consul.io/docs/agent/checks.html)
+
+        <div class = 'solution'>
+{% highlight javascript %}
+{"service":
+{"name": "web",
+"tags": ["web"],
+"port": 8000,
+"check": {
+"script": "curl -f -X GET http://localhost:8000",
+"interval": "30s"}
+}
+}
+{% endhighlight %}
+        </div>
+
+        Essayer ensuite de demander au serveur DNS fourni par consul l’adresse de notre service “web”. Comme le health check lui indique que le service est KO, il ne renvoie pas l'adresse IP.
+        Vous pouvez fixer en lancer un simple serveur http.
+
+        {% highlight bash %}
+        python -m SimpleHTTPServer &
+        {% endhighlight %}
+
+        Vous pouvez de nouveaux acceder aux services. Sur l’interface web, des compléments d’informations nous sont fournis sur les résultats du health check.
+
+
+        <h2>Au niveau du node</h2>
+
+        Il est aussi possible de rajouter un health check au niveau du node. Consul va considérer que si le health check d'un node renvoie une erreur, alors le service n'est pas accessible.
+
+        On va rajouter un check simple qui permet de visualiser la consommation mémoire de notre agent. Pour celà, on va créer dans notre répertoire bin un fichier mem.sh contenant le script suivant :
+
+        {% highlight bash %}
+        free -m | awk 'NR==2{printf "Memory Usage: %s/%sMB (%.2f%%)\n", $3,$2,$3*100/$2 }'
+        {% endhighlight %}
+
+        Penser à rajouter les droits d'exécution sur ce fichier.
+
+        Ensuite, dans notre répertoire de travail consul, créer un fichier nommé memcheck.json permettant à consul de nous afficher sur l’ui la mémoire utilisé sur votre machine.
+
+        <div class = 'solution'>
+{% highlight javascript %}
+{"check":
+{"name": "memory check",
+"script": "$HOME/bin/mem.sh",
+"interval": "30s"
+}
+}
+{% endhighlight %}
+        </div>
+
+        Remarque : le code de retour du script va indiquer si le service est up ou non
+
+        Vous pouvez vous amusez à faire de même pour vérifier l’utilisation disque de la machine et le load average avec les scripts suivants :
+
+{% highlight bash %}
+df -h | awk '$NF=="/"{printf "Disk Usage: %d/%dGB (%s)\n", $3,$2,$5}'
+cat /proc/loadavg | awk '{printf "CPU Load Average: 1m: %.2f, 5m: %.2f, 15m: %.2f\n", $1,$2,$3}'
+{% endhighlight %}
+
+
 
     </section>
 
