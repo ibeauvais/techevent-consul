@@ -62,12 +62,12 @@
         <h4>Pour Linux ou Mac :</h4>
 
         {% highlight bash %}
-        $ chmod 600 graphite.pem
+$ chmod 600 graphite.pem
         {% endhighlight %}
 
 
         {% highlight bash %}
-        $ ssh -i consul.pem ec2-user@{{page.group}}-server.consul.aws.xebiatechevent.info
+$ ssh consul@{{page.group}}-server.consul.aws.xebiatechevent.info
         {% endhighlight %}
 
         <h4>Pour windows :</h4>
@@ -163,16 +163,17 @@ Avec consul, la création d’un service passe par la création d’un fichier j
 
 {% highlight javascript %}
 {"service":
-{
-"name": "web",
-"tags": ["web"], "port": 8000}
+    {
+        "name": "web",
+        "tags": ["web"], "port": 8000
+    }
 }
 {% endhighlight %}
 
 Lancer ensuite la commande consul reload pour demander à consul de recharger la configuration.
 
 {% highlight bash %}
-consul reload
+$ consul reload
 {% endhighlight %}
 
 Vous pouvez voir dans l’interface qu'un nouveau service est apparu.
@@ -182,9 +183,10 @@ Vous pouvez voir dans l’interface qu'un nouveau service est apparu.
     <section>
         <h1>Interroger consul</h1>
 Consul met à disposition deux interfaces pour avoir accès aux informations d’un service :
-- un service REST
-- un serveur DNS.
-
+        <ul>
+<li>un service REST</li>
+<li>un serveur DNS.</li>
+        </ul>
 Essayer de récupérer les informations de votre service avec les deux interfaces disponibles.
 
 [lien vers la documentation de l'api REST](https://www.consul.io/docs/agent/http/catalog.html)
@@ -194,8 +196,8 @@ Essayer de récupérer les informations de votre service avec les deux interface
 
 <div class = 'solution'>
 {% highlight bash %}
-curl localhost:8500/v1/catalog/service/web
-dig @127.0.0.1 -p 8600 web.service.consul
+$ curl localhost:8500/v1/catalog/service/web
+$ dig @127.0.0.1 -p 8600 web.service.consul
 {% endhighlight %}
 </div>
 
@@ -203,7 +205,7 @@ Remarque: Consul est aussi capable d'utiliser le protocole DNS SRV, qui permet n
 
 <div class = 'solution'>
 {% highlight bash %}
-dig @127.0.0.1 -p 8600 web.service.consul SRV
+$ dig @127.0.0.1 -p 8600 web.service.consul SRV
 {% endhighlight %}
 </div>
 
@@ -223,13 +225,14 @@ dig @127.0.0.1 -p 8600 web.service.consul SRV
         <div class = 'solution'>
 {% highlight javascript %}
 {"service":
-{"name": "web",
-"tags": ["web"],
-"port": 8000,
-"check": {
-"script": "curl -f -X GET http://localhost:8000",
-"interval": "30s"}
-}
+    {"name": "web",
+        "tags": ["web"],
+        "port": 8000,
+        "check": {
+            "script": "curl -f -X GET http://localhost:8000",
+            "interval": "30s"
+        }
+    }
 }
 {% endhighlight %}
         </div>
@@ -238,7 +241,7 @@ dig @127.0.0.1 -p 8600 web.service.consul SRV
         Vous pouvez fixer en lancer un simple serveur http.
 
         {% highlight bash %}
-        python -m SimpleHTTPServer &
+$ python -m SimpleHTTPServer &
         {% endhighlight %}
 
         Vous pouvez de nouveaux acceder aux services. Sur l’interface web, des compléments d’informations nous sont fournis sur les résultats du health check.
@@ -251,7 +254,7 @@ dig @127.0.0.1 -p 8600 web.service.consul SRV
         On va rajouter un check simple qui permet de visualiser la consommation mémoire de notre agent. Pour celà, on va créer dans notre répertoire bin un fichier mem.sh contenant le script suivant :
 
         {% highlight bash %}
-        free -m | awk 'NR==2{printf "Memory Usage: %s/%sMB (%.2f%%)\n", $3,$2,$3*100/$2 }'
+$ free -m | awk 'NR==2{printf "Memory Usage: %s/%sMB (%.2f%%)\n", $3,$2,$3*100/$2 }'
         {% endhighlight %}
 
         Penser à rajouter les droits d'exécution sur ce fichier.
@@ -261,10 +264,10 @@ dig @127.0.0.1 -p 8600 web.service.consul SRV
         <div class = 'solution'>
 {% highlight javascript %}
 {"check":
-{"name": "memory check",
-"script": "$HOME/bin/mem.sh",
-"interval": "30s"
-}
+    {"name": "memory check",
+        "script": "$HOME/bin/mem.sh",
+        "interval": "30s"
+    }
 }
 {% endhighlight %}
         </div>
@@ -274,11 +277,9 @@ dig @127.0.0.1 -p 8600 web.service.consul SRV
         Vous pouvez vous amusez à faire de même pour vérifier l’utilisation disque de la machine et le load average avec les scripts suivants :
 
 {% highlight bash %}
-df -h | awk '$NF=="/"{printf "Disk Usage: %d/%dGB (%s)\n", $3,$2,$5}'
-cat /proc/loadavg | awk '{printf "CPU Load Average: 1m: %.2f, 5m: %.2f, 15m: %.2f\n", $1,$2,$3}'
+$ df -h | awk '$NF=="/"{printf "Disk Usage: %d/%dGB (%s)\n", $3,$2,$5}'
+$ cat /proc/loadavg | awk '{printf "CPU Load Average: 1m: %.2f, 5m: %.2f, 15m: %.2f\n", $1,$2,$3}'
 {% endhighlight %}
-
-
 
     </section>
 
