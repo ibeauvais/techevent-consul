@@ -112,7 +112,7 @@ $ ssh -i consul.pem ec2-user@{{page.group}}-server.consul.aws.xebiatechevent.inf
 
         et lancer le serveur :
         {% highlight bash %}
-$ consul agent -server -bootstrap-expect 1 -data-dir /tmp/consul --client 0.0.0.0 -ui-dir ui -config-dir etc/consul.d &
+$ consul agent -server -bootstrap-expect 1 -data-dir /tmp/consul --client 0.0.0.0 -ui-dir ui -config-dir etc/consul.d  > log &
         {% endhighlight %}
 
         Il est possible de regarder l’état du serveur avec la commande
@@ -135,7 +135,7 @@ $ ssh -i consul.pem ec2-user@{{page.group}}-web1.consul.aws.xebiatechevent.info
 
         {% highlight bash %}
 $ mkdir -p etc/consul.d
-$ consul agent -data-dir /tmp/consul -node=agent1 -config-dir etc/consul.d &
+$ consul agent -data-dir /tmp/consul -node=agent1 -config-dir etc/consul.d > log &
 $ consul join <addr_ip_privé_serveur/>
         {% endhighlight %}
 
@@ -153,6 +153,59 @@ $ curl localhost:8500/v1/catalog/nodes
         {% highlight bash %}
 $ http://{{page.group}}-server.consul.aws.xebiatechevent.info:8500/ui/
         {% endhighlight %}
+
+    </section>
+
+    <section>
+        <h2>Création de notre premier service</h2>
+
+Avec consul, la création d’un service passe par la création d’un fichier json décrivant le service. Dans le répertoire /etc/consul.d de la machine contenant l’agent, créer un fichier nommé web.json avec le contenu suivant :
+
+{% highlight javascript %}
+{"service":
+{
+"name": "web",
+"tags": ["web"], "port": 8000}
+}
+{% endhighlight %}
+
+Lancer ensuite la commande consul reload pour demander à consul de recharger la configuration.
+
+{% highlight bash %}
+consul reload
+{% endhighlight %}
+
+Vous pouvez voir dans l’interface qu'un nouveau service est apparu.
+
+    </section>
+
+    <section>
+        <h3>Interroger consul</h3>
+Consul met à disposition deux interfaces pour avoir accès aux informations d’un service :
+- un service REST
+- un serveur DNS.
+
+Essayer de récupérer les informations de votre service avec les deux interfaces disponibles.
+
+[lien vers la documentation de l'api REST](https://www.consul.io/docs/agent/http/catalog.html)
+
+[lien vers la documentation de l'interface DNS](https://www.consul.io/docs/agent/dns.html)
+
+
+<div class = 'solution'>
+{% highlight bash %}
+curl localhost:8500/v1/catalog/service/web
+dig @127.0.0.1 -p 8600 web.service.consul
+{% endhighlight %}
+</div>
+
+Remarque: Consul est aussi capable d'utiliser le protocole DNS SRV, qui permet notamment d’accéder en plus de l’adresse IP au port du serveur demandé :
+
+<div class = 'solution'>
+{% highlight bash %}
+dig @127.0.0.1 -p 8600 web.service.consul SRV
+{% endhighlight %}
+</div>
 
     </section>
 
